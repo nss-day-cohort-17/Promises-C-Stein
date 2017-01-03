@@ -9,7 +9,8 @@ var deck;
 //   url: `https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`
 // })
 // .done(function(data, textStatus, XHR){
-//   deckId = data.deck_id
+//   console.log("data from line 12", data)
+//   var deckId = data.deck_id
 
 //   $.ajax({
 //     url: `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`
@@ -26,7 +27,7 @@ function getDeck(){
     $.ajax({
       url: `https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`
     })
-    .done(function(data, textStatus, XHR){
+    .then(function(data, textStatus, XHR){
       resolve(data.deck_id)
     })
   })
@@ -37,7 +38,7 @@ function getCard(deckId) {
     $.ajax({
       url: `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`
     })
-    .done(function(data, t, x){
+    .then(function(data, t, x){
       resolve(data)
     })
   })
