@@ -1,3 +1,4 @@
+//order of execution, ease of comprehension
 console.log("promises");
 //////////////////////////
 ///// THE BROKEN WAY /////
@@ -9,6 +10,7 @@ console.log("promises");
 // function doSuspects(e){
 //   var data = JSON.parse(e.target.responseText)
 //   suspects = data.suspects
+//   console.log("suspects", suspects)
 // }
 
 // function doWeapons(e){
@@ -128,11 +130,39 @@ var promise1 = new Promise(function(resolve, reject){
   var request1 = new XMLHttpRequest()
   request1.addEventListener("load", function() {
     var list = JSON.parse(request1.responseText).suspects
-    resolve(list)
+    resolve(list)// pass the info we're waiting for to the resolve
   })
   request1.open("GET", "suspects.json")
   request1.send()
 })
+
+console.log("typeof promise1", typeof promise1)
+
+/////////////////////////////////////////////////////
+///Single Promise////////////////////////////////////
+
+ promise1
+  .then(
+  function(val){
+    suspects = val
+    console.log("promise one resolved, ", suspects)
+    return promise2
+  })
+  .then(
+    function(val) {
+      weapons = val 
+      console.log("promise two resolved, ", weapons)
+      return promise3
+    })
+  .then(
+    function(val) {
+      rooms = val
+      console.log("promise three resolved, ", rooms)
+    })
+  .then(findGuess)
+  .then(function(){
+    console.log("you can chain 'thens' ")
+  })
 
 var promise2 = new Promise(function(resolve, reject){
   var request2 = new XMLHttpRequest()
@@ -154,49 +184,17 @@ var promise3 = new Promise(function(resolve, reject){
   request3.send()
 })
 
-///////put the logic in one  function///////
 
-// function getJSON (listToGet) {
-//   return new Promise(function(resolve, reject){
-//     var xhr = new XMLHttpRequest()
-//     xhr.addEventListener("load", function() {
-//       var list = JSON.parse(xhr.responseText)[listToGet];
-//       window[listToGet] = list
-//       //console.log('got ' + listToGet)
-
-//       resolve()
-//     })
-//     console.log(listToGet);
-//     xhr.open("GET", `${listToGet}.json`)
-//     xhr.send()
-//   })
-// }
-// //example of chaining promises in ajax file
-// getJSON("suspects")
-//   .then(() => getJSON("weapons"))
-//   .then(() => getJSON("rooms"))
-//   .then(findGuess) 
-/////////////////////////////////////////////////////
-///Single Promise////////////////////////////////////
-
-// promise1.then(
-//   function(val){
-//     var obj = JSON.parse(val)
-//     suspects = obj.suspects
-//     console.log(suspects)
-//     findGuess()
-//   }
-// )
 /////////////////////////////////////////////////////
 ///All the Promises////////////////////////////////////
 
-Promise.all([promise1, promise2, promise3])
-  .then(function(values) {
-    suspects = values[0]
-    weapons = values[1]
-    rooms = values[2]
-    findGuess()
-  })
+// Promise.all([promise1, promise2, promise3])
+//   .then(function(values) {
+//     suspects = values[0]
+//     weapons = values[1]
+//     rooms = values[2]
+//     findGuess()
+//   })
 
 function findGuess(){
   var suspectGuess = suspects[returnRandom(0, 5)].name
